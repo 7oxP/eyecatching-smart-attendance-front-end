@@ -112,13 +112,10 @@ def employees():
         userId = userInfo.get('user_id', '')
         name = userInfo.get('name', '')
         floor = userInfo.get('floor', '')
-        print(userId)
 
         # nambahin data user ke dalam list user_data
         userData.append({'id': userId, 'name': name, 'floor': floor})
     
-    print(userData)
-
     return render_template("employees.html", data=userData)
 
 @app.route('/gallery', methods=["GET"])
@@ -137,7 +134,37 @@ def register():
 # method untuk ngasih tau flask bahwa endpoint ini butuh jwt token kalo mau ngakses
 @jwt_required()
 def attendances_log():
-    return render_template("#",)
+    # ambil jwt token dari session
+    jwtToken = f"Bearer {session['jwt_token']}"
+    
+    data = requests.get(f"{BASE_URL}/api/users/attendance-logs", headers={"Authorization": jwtToken})
+    data = data.json()
+    
+    userData = []
+
+    # iterasi melalui setiap entitas user di dalam data
+    for nodeId, timestampInfo in data['data'].items():
+            for timestampInfo, userInfo in timestampInfo.items():
+                userId = userInfo.get('user_id', '')
+                name = userInfo.get('name', '')
+                floor = userInfo.get('floor', '')
+                status = userInfo.get('status', '')
+                timestamp = userInfo.get('timestamp', '')
+                captured_image = userInfo.get("captured_face_url", "")
+
+            
+            # Tambahkan data user ke dalam list userData
+            userData.append({
+                'id': userId, 
+                'name': name, 
+                'floor': floor, 
+                'status': status, 
+                'timestamp': timestamp, 
+                'captured_image': captured_image
+                })
+    
+    
+    return render_template("attendance.html", data=userData)
 
 if __name__ == "__main__":
     app.run(debug=True)
