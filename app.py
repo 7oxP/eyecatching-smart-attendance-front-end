@@ -20,7 +20,8 @@ app.config['JWT_COOKIE_CSRF_PROTECT'] = False
 jwt = JWTManager(app)
 
 # set base url API
-BASE_URL = "https://eyecatching-image-ghhipha43a-uc.a.run.app"
+# BASE_URL = "https://eyecatching-image-ghhipha43a-uc.a.run.app"
+BASE_URL = "http://127.0.0.1:8000"
 
 @app.route("/")
 def index():
@@ -124,11 +125,50 @@ def employees():
 def gallery():
     return render_template("",)
 
-@app.route('/register', methods=["GET"])
+@app.route('/register', methods=["POST"])
 # method untuk ngasih tau flask bahwa endpoint ini butuh jwt token kalo mau ngakses
 @jwt_required()
 def register():
-    return render_template("auth/register.html",)
+
+    # ambil jwt token dari session
+    jwtToken = f"Bearer {session['jwt_token']}"
+
+    # cek method http request yang masuk ke endpoint
+    if request.method == "POST":
+        nip = request.form.get("nip")
+        name = request.form.get("name")
+        floor = request.form.get("floor")
+        email = request.form.get("email")
+        password = request.form.get("password")
+        profile_picture = request.files.get("profilePicture")
+
+        print(nip, name, floor, email, password)
+
+        # cek lagi kalo email udah diisi
+        if nip and name and floor and email and password:
+
+            # set data login
+            userData = {
+                "id_number": nip,
+                "name": name,
+                "floor": floor,
+                "email": email,
+                "password": password,
+            }
+
+            files = {
+                'image_file': (profile_picture.filename, profile_picture.stream, profile_picture.mimetype)
+            }
+
+            # kirim post request ke API untuk login
+            response = requests.post(f"{BASE_URL}/api/users", files=files, data=userData, headers={"Authorization": jwtToken})
+            response = response.json()
+
+            # tambahin validasi jika request post berhasil, maka ada pesannya
+
+            return redirect(url_for("employees"))
+
+    return redirect(url_for("employees"))
 
 @app.route('/attendances-log', methods=["GET"])
 # method untuk ngasih tau flask bahwa endpoint ini butuh jwt token kalo mau ngakses

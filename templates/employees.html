@@ -12,16 +12,16 @@
     <title>SB Admin 2 - Tables</title>
 
     <!-- Custom fonts for this template -->
-    <link href="static/vendor/fontawesome-free/css/all.min.css" rel="stylesheet" type="text/css">
+    <link href="../static/vendor/fontawesome-free/css/all.min.css" rel="stylesheet" type="text/css">
     <link
         href="https://fonts.googleapis.com/css?family=Nunito:200,200i,300,300i,400,400i,600,600i,700,700i,800,800i,900,900i"
         rel="stylesheet">
 
     <!-- Custom styles for this template -->
-    <link href="static/css/sb-admin-2.min.css" rel="stylesheet">
+    <link href="../static/css/sb-admin-2.min.css" rel="stylesheet">
 
     <!-- Custom styles for this page -->
-    <link href="static/vendor/datatables/dataTables.bootstrap4.min.css" rel="stylesheet">
+    <link href="../static/vendor/datatables/dataTables.bootstrap4.min.css" rel="stylesheet">
 
 </head>
 
@@ -35,7 +35,7 @@
 
             <!-- Sidebar - Brand -->
             <a class="sidebar-brand d-flex align-items-center justify-content-center" href="{{url_for('dashboard')}}">
-                <img src="static/img/image_54.png" alt="logo XL">
+                <img src="../static/img/image_54.png" alt="logo XL">
                 <div class="sidebar-brand-text mx-3"> <sup></sup></div>
             </a>
 
@@ -221,7 +221,7 @@
                                 </h6>
                                 <a class="dropdown-item d-flex align-items-center" href="#">
                                     <div class="dropdown-list-image mr-3">
-                                        <img class="rounded-circle" src="static/img/undraw_profile_1.svg"
+                                        <img class="rounded-circle" src="../static/img/undraw_profile_1.svg"
                                             alt="...">
                                         <div class="status-indicator bg-success"></div>
                                     </div>
@@ -233,7 +233,7 @@
                                 </a>
                                 <a class="dropdown-item d-flex align-items-center" href="#">
                                     <div class="dropdown-list-image mr-3">
-                                        <img class="rounded-circle" src="static/img/undraw_profile_2.svg"
+                                        <img class="rounded-circle" src="../static/img/undraw_profile_2.svg"
                                             alt="...">
                                         <div class="status-indicator"></div>
                                     </div>
@@ -245,7 +245,7 @@
                                 </a>
                                 <a class="dropdown-item d-flex align-items-center" href="#">
                                     <div class="dropdown-list-image mr-3">
-                                        <img class="rounded-circle" src="static/img/undraw_profile_3.svg"
+                                        <img class="rounded-circle" src="../static/img/undraw_profile_3.svg"
                                             alt="...">
                                         <div class="status-indicator bg-warning"></div>
                                     </div>
@@ -279,7 +279,7 @@
                                 data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                 <span class="mr-2 d-none d-lg-inline text-gray-600 small">Douglas McGee</span>
                                 <img class="img-profile rounded-circle"
-                                    src="static/img/undraw_profile.svg">
+                                    src="../static/img/undraw_profile.svg">
                             </a>
                             <!-- Dropdown - User Information -->
                             <div class="dropdown-menu dropdown-menu-right shadow animated--grow-in"
@@ -318,8 +318,68 @@
 
                     <!-- DataTales Example -->
                     <div class="card shadow mb-4">
-                        <div class="card-header py-3">
+                        <div class="card-header py-3 d-flex justify-content-between align-items-center">
                             <h6 class="m-0 font-weight-bold text-primary">Data Karyawan PT XL Axiata.Tbk</h6>
+
+                            <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#addUserModal">
+                                <i class="fas fa-plus fa-sm text-white-50"></i> Add employee
+                            </button>
+                            
+                            <!-- Add user modal -->
+                            <div class="modal fade" id="addUserModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                                <div class="modal-dialog" role="document">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                    <h5 class="modal-title" id="exampleModalLabel">Add New Employee</h5>
+                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                        <span aria-hidden="true">&times;</span>
+                                    </button>
+                                    </div>
+                                    <div class="modal-body">
+                                        <form action="{{url_for('register')}}" enctype="multipart/form-data" method="post">
+                                            <!-- NIP input -->
+                                            <div data-mdb-input-init class="form-outline mb-4">
+                                                <label class="form-label" for="nip">NIP</label>
+                                                <input type="text" name="nip" id="nip" class="form-control" />
+                                            </div>
+
+                                            <!-- Name input -->
+                                            <div data-mdb-input-init class="form-outline mb-4">
+                                                <label class="form-label" for="name">Name</label>
+                                                <input type="text" name="name" id="name" class="form-control" />
+                                            </div>
+
+                                            <!-- Floor input -->
+                                            <div data-mdb-input-init class="form-outline mb-4">
+                                                <label class="form-label" for="floor">Floor</label>
+                                                <input type="text" name="floor" id="floor" class="form-control" />
+                                            </div>
+                        
+                                            <!-- Email input -->
+                                            <div data-mdb-input-init class="form-outline mb-4">
+                                                <label class="form-label" for=  "email">Email address</label>
+                                                <input type="email" name="email" id="email" class="form-control" />
+                                            </div>
+                        
+                                            <!-- Password input -->
+                                            <div data-mdb-input-init class="form-outline mb-4">
+                                                <label class="form-label" for="password">Password</label>
+                                                <input type="password" name="password" id="password" class="form-control" />
+                                            </div>
+
+                                            <!-- Profile Picture input -->
+                                            <div data-mdb-input-init class="form-outline mb-4">
+                                                <label class="form-label" for="profilePicture">Profile Picture</label>
+                                                <input type="file" class="form-control-file" name="profilePicture" id="profilePicture">
+                                            </div>
+                        
+                                            <!-- Submit button -->
+                                            <button type="submit" data-mdb-button-init data-mdb-ripple-init class="btn btn-primary btn-block">Add Employee!</button>
+                                        </form>
+                                    </div>
+                                </div>
+                                </div>
+                            </div>
                         </div>
                         <div class="card-body">
                             <div class="table-responsive">
@@ -399,21 +459,21 @@
     </div>
 
     <!-- Bootstrap core JavaScript-->
-    <script src="static/vendor/jquery/jquery.min.js"></script>
-    <script src="static/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+    <script src="../static/vendor/jquery/jquery.min.js"></script>
+    <script src="../static/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
 
     <!-- Core plugin JavaScript-->
-    <script src="static/vendor/jquery-easing/jquery.easing.min.js"></script>
+    <script src="../static/vendor/jquery-easing/jquery.easing.min.js"></script>
 
     <!-- Custom scripts for all pages-->
-    <script src="static/js/sb-admin-2.min.js"></script>
+    <script src="../static/js/sb-admin-2.min.js"></script>
 
     <!-- Page level plugins -->
-    <script src="static/vendor/datatables/jquery.dataTables.min.js"></script>
-    <script src="static/vendor/datatables/dataTables.bootstrap4.min.js"></script>
+    <script src="../static/vendor/datatables/jquery.dataTables.min.js"></script>
+    <script src="../static/vendor/datatables/dataTables.bootstrap4.min.js"></script>
 
     <!-- Page level custom scripts -->
-    <script src="static/js/demo/datatables-demo.js"></script>
+    <script src="../static/js/demo/datatables-demo.js"></script>
 
 </body>
 
