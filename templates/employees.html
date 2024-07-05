@@ -236,19 +236,19 @@
 
                                         </tr>
                                     </thead>
-                                    {% for item in data %}
                                     <tbody>
-                                        <tr>
-                                            <td>{{item.id}}</td>
-                                            <td>{{item.name}}</td>
-                                            <td>{{item.floor}}</td>
-                                            <td>
-                                                <a href="/updateUser/{{item.id}}" class="btn btn-warning" role="button"><i class='bx bxs-edit'></i> Update</a>
-                                                <a href="/deleteUser/{{item.id}}" class="btn btn-danger" role="button"><i class='bx bxs-trash-alt'></i> Delete</a>
-                                              </td>
-                                        </tr>
+                                        {% for item in data %}
+                                            <tr>
+                                                <td>{{item.id}}</td>
+                                                <td>{{item.name}}</td>
+                                                <td>{{item.floor}}</td>
+                                                <td>
+                                                    <a href="/updateUser/{{item.id}}" class="btn btn-warning" role="button"><i class='bx bxs-edit'></i> Update</a>
+                                                    <a href="/deleteUser/{{item.id}}" class="btn btn-danger" role="button"><i class='bx bxs-trash-alt'></i> Delete</a>
+                                                </td>
+                                            </tr>
+                                        {% endfor %}
                                     </tbody>
-                                    {% endfor %}
                                 </table>
                             </div>
                         </div>

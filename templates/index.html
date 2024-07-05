@@ -213,15 +213,15 @@
                                         <th>Status</th>
                                     </tr>
                                 </thead>
-                                {% for item in attendanceData %}
                                 <tbody>
-                                    <tr>
-                                        <td>{{item.floor}}</td>
-                                        <td>{{item.status}}</td>
-                                        <td>{{item.timestamp}}</td>
-                                    </tr>
+                                    {% for item in attendanceData %}
+                                        <tr>
+                                            <td>{{item.floor}}</td>
+                                            <td>{{item.status}}</td>
+                                            <td>{{item.timestamp}}</td>
+                                        </tr>
+                                    {% endfor %}
                                 </tbody>
-                                {% endfor %}
                             </table>
                         </div>
                     </div>
