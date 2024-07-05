@@ -62,9 +62,7 @@
                 </a>
                 <div id="collapsePages" class="collapse" aria-labelledby="headingPages" data-parent="#accordionSidebar">
                     <div class="bg-white py-2 collapse-inner rounded">
-                        <h6 class="collapse-header">Screens:</h6>
                         <a class="collapse-item" href="{{url_for('employees')}}">Employees List</a>
-                        <a class="collapse-item" href="{{url_for('register')}}">Register</a>
                     </div>
                 </div>
             </li>
@@ -114,7 +112,6 @@
                             <!-- Dropdown - User Information -->
                             <div class="dropdown-menu dropdown-menu-right shadow animated--grow-in"
                                 aria-labelledby="userDropdown">
-                                <div class="dropdown-divider"></div>
                                 <a class="dropdown-item" href="#" data-toggle="modal" data-target="#logoutModal">
                                     <i class="fas fa-sign-out-alt fa-sm fa-fw mr-2 text-gray-400"></i>
                                     Logout
@@ -219,10 +216,9 @@
                                 {% for item in data %}
                                 <tbody>
                                     <tr>
-
                                         <td>{{item.floor}}</td>
-                                        <td>{{item.times}}</td>
                                         <td>{{item.status}}</td>
+                                        <td>{{item.timestamp}}</td>
                                     </tr>
                                 </tbody>
                                 {% endfor %}

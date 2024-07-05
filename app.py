@@ -21,7 +21,7 @@ jwt = JWTManager(app)
 
 # set base url API
 # BASE_URL = "https://eyecatching-image-ghhipha43a-uc.a.run.app"
-BASE_URL = "http://127.0.0.1:8000"
+BASE_URL = "https://eyecatching-image-ghhipha43a-uc.a.run.app"
 
 @app.route("/")
 def index():
@@ -92,7 +92,31 @@ def logout():
 # method untuk ngasih tau flask bahwa endpoint ini butuh jwt token kalo mau ngakses
 @jwt_required()
 def dashboard():
-    return render_template("index.html",)
+     # ambil jwt token dari session
+    jwtToken = f"Bearer {session['jwt_token']}"
+    
+    data = requests.get(f"{BASE_URL}/api/users/attendance-logs", headers={"Authorization": jwtToken})
+    data = data.json()
+    
+    userData = []
+
+    # iterasi melalui setiap entitas user di dalam data
+    for nodeId, timestampInfo in data['data'].items():
+            for timestampInfo, userInfo in timestampInfo.items():
+                floor = userInfo.get('floor', '')
+                status = userInfo.get('status', '')
+                timestamp = userInfo.get('timestamp', '')
+
+            
+            # Tambahkan data user ke dalam list userData
+            userData.append({
+                'floor': floor, 
+                'status': status, 
+                'timestamp': timestamp, 
+                })
+    
+    
+    return render_template("index.html", data=userData)
 
 @app.route('/employees', methods=["GET"])
 # method untuk ngasih tau flask bahwa endpoint ini butuh jwt token kalo mau ngakses
