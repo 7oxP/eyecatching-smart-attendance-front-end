@@ -1,5 +1,7 @@
 from flask import Flask, render_template, request, redirect, url_for, make_response, session
 from flask_jwt_extended import JWTManager, set_access_cookies, jwt_required, unset_jwt_cookies
+from datetime import datetime
+from zoneinfo import ZoneInfo
 import requests
 
 app = Flask(__name__)
@@ -23,9 +25,32 @@ jwt = JWTManager(app)
 # BASE_URL = "https://eyecatching-image-ghhipha43a-uc.a.run.app"
 BASE_URL = "https://eyecatching-image-ghhipha43a-uc.a.run.app"
 
+def get_employees():
+    # ambil jwt token dari session
+    jwtToken = f"Bearer {session['jwt_token']}"
+
+    # kirim get request ke API untuk dapetin data user (di bagian header authorization diisi jwt token)
+    data = requests.get(f"{BASE_URL}/api/users", headers={"Authorization": jwtToken})
+    data = data.json()
+
+    userData = []
+
+    # iterasi melalui setiap entitas user di dalam data
+    for nodeId, userInfo in data['data'].items():
+        userId = userInfo.get('user_id', '')
+        name = userInfo.get('name', '')
+        floor = userInfo.get('floor', '')
+
+        if name == "admin":
+            continue
+        # nambahin data user ke dalam list user_data
+        userData.append({'id': userId, 'name': name, 'floor': floor})
+    
+    return userData
+
 @app.route("/")
 def index():
-    return "Hello"
+    return redirect(url_for("dashboard"))
 
 # method untuk mengembalikan ke halaman login bagi user yang tidak login dan mencoba mengakses halaman yang terproteksi 
 @jwt.unauthorized_loader
@@ -98,48 +123,38 @@ def dashboard():
     data = requests.get(f"{BASE_URL}/api/users/attendance-logs", headers={"Authorization": jwtToken})
     data = data.json()
     
-    userData = []
+    attendanceData = []
 
     # iterasi melalui setiap entitas user di dalam data
     for nodeId, timestampInfo in data['data'].items():
-            for timestampInfo, userInfo in timestampInfo.items():
-                floor = userInfo.get('floor', '')
-                status = userInfo.get('status', '')
-                timestamp = userInfo.get('timestamp', '')
-
+        for timestampInfo, userInfo in timestampInfo.items():
+            floor = userInfo.get('floor', '')
+            status = userInfo.get('status', '')
+            timestamp = userInfo.get('timestamp', '')
             
-            # Tambahkan data user ke dalam list userData
-            userData.append({
-                'floor': floor, 
-                'status': status, 
-                'timestamp': timestamp, 
-                })
+            convertedTimestamp = datetime.strptime(timestamp, "%a, %d %b %Y %H:%M")
+            currentDay = datetime.now(ZoneInfo('Asia/Jakarta'))
+            
+            # ambil data kehadiran hari ini
+            if convertedTimestamp.date() == currentDay.date():
+                # Tambahkan data user ke dalam list attendanceData
+                attendanceData.append({
+                    'floor': floor, 
+                    'status': status, 
+                    'timestamp': timestamp, 
+                    })
+    
+    employeesData = get_employees()
     
     
-    return render_template("index.html", data=userData)
+    return render_template("index.html", attendanceData=attendanceData, employeesData=employeesData)
 
 @app.route('/employees', methods=["GET"])
 # method untuk ngasih tau flask bahwa endpoint ini butuh jwt token kalo mau ngakses
 @jwt_required()
 def employees():
 
-    # ambil jwt token dari session
-    jwtToken = f"Bearer {session['jwt_token']}"
-
-    # kirim get request ke API untuk dapetin data user (di bagian header authorization diisi jwt token)
-    data = requests.get(f"{BASE_URL}/api/users", headers={"Authorization": jwtToken})
-    data = data.json()
-
-    userData = []
-
-    # iterasi melalui setiap entitas user di dalam data
-    for nodeId, userInfo in data['data'].items():
-        userId = userInfo.get('user_id', '')
-        name = userInfo.get('name', '')
-        floor = userInfo.get('floor', '')
-
-        # nambahin data user ke dalam list user_data
-        userData.append({'id': userId, 'name': name, 'floor': floor})
+    userData = get_employees()
     
     return render_template("employees.html", data=userData)
 
@@ -208,13 +223,13 @@ def attendances_log():
 
     # iterasi melalui setiap entitas user di dalam data
     for nodeId, timestampInfo in data['data'].items():
-            for timestampInfo, userInfo in timestampInfo.items():
-                userId = userInfo.get('user_id', '')
-                name = userInfo.get('name', '')
-                floor = userInfo.get('floor', '')
-                status = userInfo.get('status', '')
-                timestamp = userInfo.get('timestamp', '')
-                captured_image = userInfo.get("captured_face_url", "")
+        for timestampInfoKey, userInfo in timestampInfo.items():
+            userId = userInfo.get('user_id', '')
+            name = userInfo.get('name', '')
+            floor = userInfo.get('floor', '')
+            status = userInfo.get('status', '')
+            timestamp = userInfo.get('timestamp', '')
+            captured_image = userInfo.get("captured_face_url", "")
 
             
             # Tambahkan data user ke dalam list userData
