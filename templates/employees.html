@@ -151,7 +151,27 @@
 
                 </nav>
                 <!-- End of Topbar -->
-
+                {% with messages = get_flashed_messages(with_categories=true) %}
+                    {% if messages %}
+                        {% for category, message in messages %}
+                            {% if category == 'error' %}
+                                <div class="alert alert-danger alert-dismissible fade show" id="flashAlert" role="alert">
+                                    {{message}}
+                                    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                    </button>
+                                </div>
+                            {% else %}
+                                <div class="alert alert-success alert-dismissible fade show" id="flashAlert" role="alert">
+                                    {{message}}
+                                    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                    </button>
+                                </div>
+                            {% endif %}
+                        {% endfor %}
+                    {% endif %}
+                {% endwith %}
                 <!-- Begin Page Content -->
                 <div class="container-fluid">
 
@@ -165,7 +185,7 @@
                             <h6 class="m-0 font-weight-bold text-primary">Data Karyawan PT XL Axiata.Tbk</h6>
 
                             <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#addUserModal">
-                                <i class="fas fa-plus fa-sm text-white-50"></i> Add employee
+                                <i class="fas fa-plus fa-sm"></i> Add employee
                             </button>
                             
                             <!-- Add user modal -->
@@ -223,6 +243,7 @@
                                 </div>
                                 </div>
                             </div>
+                            <!-- End of Add User Modal -->
                         </div>
                         <div class="card-body">
                             <div class="table-responsive">
@@ -242,10 +263,81 @@
                                                 <td>{{item.id}}</td>
                                                 <td>{{item.name}}</td>
                                                 <td>{{item.floor}}</td>
-                                                <td>
-                                                    <a href="/updateUser/{{item.id}}" class="btn btn-warning" role="button"><i class='bx bxs-edit'></i> Update</a>
-                                                    <a href="/deleteUser/{{item.id}}" class="btn btn-danger" role="button"><i class='bx bxs-trash-alt'></i> Delete</a>
-                                                </td>
+                                                <td style="display: flex; gap: 5px;">
+                                                    <button type="button" class="btn btn-warning" data-toggle="modal" data-target="#updateUserModal{{item.id}}">
+                                                        <i class='bx bxs-edit'></i> Update
+                                                    </button>
+                                                    <button type="button" class="btn btn-danger" data-toggle="modal" data-target="#deleteUserModal{{item.id}}">
+                                                        <i class='bx bxs-trash-alt'></i> Delete
+                                                    </button>                                                    
+                                                    <!-- Delete user Modal-->
+                                                    <div class="modal fade" id="deleteUserModal{{item.id}}" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+                                                    aria-hidden="true">
+                                                    <div class="modal-dialog" role="document">
+                                                        <div class="modal-content">
+                                                            <div class="modal-header">
+                                                                <h5 class="modal-title" id="exampleModalLabel">Are you sure want to delete this user?</h5>
+                                                                <button class="close" type="button" data-dismiss="modal" aria-label="Close">
+                                                                    <span aria-hidden="true">×</span>
+                                                                </button>
+                                                            </div>
+                                                            <div class="modal-body">Select "Delete" below if you are sure to delete this user.</div>
+                                                            <div class="modal-footer">
+                                                                <button class="btn btn-secondary" type="button" data-dismiss="modal">Cancel</button>
+                                                                <form action="{{ url_for('delete_user', user_id=item.id) }}" method="post" style="display:inline;">
+                                                                    <input type="hidden" name="_method" value="DELETE">
+                                                                    <button type="submit" class="btn btn-danger"><i class='bx bxs-trash-alt'></i> Delete</button>
+                                                                </form>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                </td>                                                
+                                                <!-- Update user modal -->
+                                                <div class="modal fade" id="updateUserModal{{item.id}}" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                                                    <div class="modal-dialog" role="document">
+                                                    <div class="modal-content">
+                                                        <div class="modal-header">
+                                                        <h5 class="modal-title" id="exampleModalLabel">Update Employee</h5>
+                                                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                            <span aria-hidden="true">&times;</span>
+                                                        </button>
+                                                        </div>
+                                                        <div class="modal-body">
+                                                            <form action="{{url_for('update_user', user_id=item.id)}}" enctype="multipart/form-data" method="post">
+
+                                                                <!-- Name input -->
+                                                                <div data-mdb-input-init class="form-outline mb-4">
+                                                                    <label class="form-label" for="name">Name</label>
+                                                                    <input type="text" value="{{item.name}}" name="name" id="name" class="form-control" />
+                                                                </div>
+
+                                                                <!-- Floor input -->
+                                                                <div data-mdb-input-init class="form-outline mb-4">
+                                                                    <label class="form-label" for="floor">Floor</label>
+                                                                    <input type="text" value="{{item.floor}}" name="floor" id="floor" class="form-control" />
+                                                                </div>
+
+                                                                <!-- Email input -->
+                                                                <div data-mdb-input-init class="form-outline mb-4">
+                                                                    <label class="form-label" for=  "email">Email address</label>
+                                                                    <input type="email" value="{{item.email}}" name="email" id="email" class="form-control" />
+                                                                </div>
+
+                                                                <!-- Profile Picture input -->
+                                                                <div data-mdb-input-init class="form-outline mb-4">
+                                                                    <label class="form-label" for="profilePicture">Profile Picture</label>
+                                                                    <input type="file" class="form-control-file" name="profilePicture" id="profilePicture">
+                                                                </div>
+
+                                                                <!-- Submit button -->
+                                                                <button type="submit" data-mdb-button-init data-mdb-ripple-init class="btn btn-primary btn-block">Update Employee</button>
+                                                            </form>
+                                                        </div>
+                                                    </div>
+                                                    </div>
+                                                </div>
+                                                <!-- End of Add Update Modal -->
                                             </tr>
                                         {% endfor %}
                                     </tbody>
@@ -280,6 +372,8 @@
     <a class="scroll-to-top rounded" href="#page-top">
         <i class="fas fa-angle-up"></i>
     </a>
+
+    
 
     <!-- Logout Modal-->
     <div class="modal fade" id="logoutModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
@@ -317,6 +411,14 @@
 
     <!-- Page level custom scripts -->
     <script src="../static/js/demo/datatables-demo.js"></script>
+
+    <script>
+        $(document).ready(function(){
+            window.setTimeout(function() {
+                $("#flashAlert").alert('close');
+            }, 5000); // Waktu dalam milidetik (misalnya, 5000 untuk 5 detik)
+        });
+        </script>        
 
 </body>
 
