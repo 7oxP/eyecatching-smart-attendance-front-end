@@ -12,13 +12,13 @@
     <title>Admin - Dashboard</title>
 
     <!-- Custom fonts for this template-->
-    <link href="static/vendor/fontawesome-free/css/all.min.css" rel="stylesheet" type="text/css">
+    <link href="../static/vendor/fontawesome-free/css/all.min.css" rel="stylesheet" type="text/css">
     <link
         href="https://fonts.googleapis.com/css?family=Nunito:200,200i,300,300i,400,400i,600,600i,700,700i,800,800i,900,900i"
         rel="stylesheet">
 
     <!-- Custom styles for this template-->
-    <link href="static/css/sb-admin-2.min.css" rel="stylesheet">
+    <link href="../static/css/sb-admin-2.min.css" rel="stylesheet">
 </head>
 
 <body id="page-top">
@@ -31,7 +31,7 @@
 
             <!-- Sidebar - Brand -->
             <a class="sidebar-brand d-flex align-items-center justify-content-center" href="{{url_for('dashboard')}}">
-                <img src="static/img/image_54.png" alt="logo XL">
+                <img src="../static/img/image_54.png" alt="logo XL">
                 <div class="sidebar-brand-text mx-3"> <sup></sup></div>
             </a>
 
@@ -107,7 +107,7 @@
                                 data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                 <span class="mr-2 d-none d-lg-inline text-gray-600 small">Admin</span>
                                 <img class="img-profile rounded-circle"
-                                    src="static/img/undraw_profile.svg">
+                                    src="../static/img/undraw_profile.svg">
                             </a>
                             <!-- Dropdown - User Information -->
                             <div class="dropdown-menu dropdown-menu-right shadow animated--grow-in"
@@ -177,11 +177,17 @@
                                 <div class="card-body">
                                     <div class="row no-gutters align-items-center">
                                         <div class="col mr-2">
-                                            <div class="text-xs font-weight-bold text-info text-uppercase mb-1">(Not) Present
+                                            <div class="text-xs font-weight-bold text-info text-uppercase mb-1">Absent
                                             </div>
                                             <div class="row no-gutters align-items-center">
                                                 <div class="col-auto">
-                                                    <div class="h1 mb-0 mr-3 font-weight-bold text-gray-800">{{ employeesData | length - attendanceData | length }}</div>
+                                                    <div class="h1 mb-0 mr-3 font-weight-bold text-gray-800">
+                                                        {% if employeesData | length > 0 %}
+                                                            {{ employeesData | length - attendanceData | length }}
+                                                        {% else %}
+                                                            {{ employeesData | length }}
+                                                        {% endif %}
+                                                    </div>
                                                 </div>
                                             </div>
                                         </div>
@@ -197,31 +203,32 @@
 
             <!-- Begin Tables -->
             <div class="container-fluid">
-
-                <!-- Page Heading -->
-                <p class="mb-4">Kehadiran Karyawan PT XL Axiata.Tbk</p>
-
                 <!-- DataTales Example -->
+                 
                 <div class="card shadow mb-4">
+                    <div class="card-header py-3 d-flex justify-content-between align-items-center">
+                        <h6 class="m-0 font-weight-bold text-primary">Daftar Karyawan yang Sudah Hadir</h6>
+                        <a class="btn btn-outline-info btn-sm" href="{{url_for('attendances_log')}}" role="button">View More <i class="fas fa-arrow-right ml-1"></i></a>
+                    </div>
                     <div class="card-body">
                         <div class="table-responsive">
                             <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
                                 <thead>
                                     <tr>
                                         <th>Lantai</th>
-                                        <th>Tanggal</th>
+                                        <th>Waktu</th>
                                         <th>Status</th>
                                     </tr>
                                 </thead>
-                                {% for item in attendanceData %}
                                 <tbody>
-                                    <tr>
-                                        <td>{{item.floor}}</td>
-                                        <td>{{item.status}}</td>
-                                        <td>{{item.timestamp}}</td>
-                                    </tr>
+                                    {% for item in attendanceData %}
+                                        <tr>
+                                            <td>{{item.floor}}</td>
+                                            <td>{{item.status}}</td>
+                                            <td>{{item.timestamp}}</td>
+                                        </tr>
+                                    {% endfor %}
                                 </tbody>
-                                {% endfor %}
                             </table>
                         </div>
                     </div>
@@ -271,21 +278,21 @@
     </div>
 
     <!-- Bootstrap core JavaScript-->
-    <script src="static/vendor/jquery/jquery.min.js"></script>
-    <script src="static/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+    <script src="../static/vendor/jquery/jquery.min.js"></script>
+    <script src="../static/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
 
     <!-- Core plugin JavaScript-->
-    <script src="static/vendor/jquery-easing/jquery.easing.min.js"></script>
+    <script src="../static/vendor/jquery-easing/jquery.easing.min.js"></script>
 
     <!-- Custom scripts for all pages-->
-    <script src="static/js/sb-admin-2.min.js"></script>
+    <script src="../static/js/sb-admin-2.min.js"></script>
 
     <!-- Page level plugins -->
-    <script src="static/vendor/chart.js/Chart.min.js"></script>
+    <script src="../static/vendor/chart.js/Chart.min.js"></script>
 
     <!-- Page level custom scripts -->
-    <script src="static/js/demo/chart-area-demo.js"></script>
-    <script src="static/js/demo/chart-pie-demo.js"></script>
+    <script src="../static/js/demo/chart-area-demo.js"></script>
+    <script src="../static/js/demo/chart-pie-demo.js"></script>
 
 </body>
 

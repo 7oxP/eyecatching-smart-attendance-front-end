@@ -154,22 +154,22 @@
                                             <th>Nama</th>
                                             <th>Lantai</th>
                                             <th>Status</th>
-                                            <th>Tanggal</th>
+                                            <th>Waktu</th>
                                             <th>Gambar Tangkapan Wajah</th>
                                         </tr>
                                     </thead>
-                                    {% for item in data %}
                                     <tbody>
-                                        <tr>
-                                            <td>{{item.id}}</td>
-                                            <td>{{item.name}}</td>
-                                            <td>{{item.floor}}</td>
-                                            <td>{{item.status}}</td>
-                                            <td>{{item.timestamp}}</td>
-                                            <td class="d-flex align-items-center justify-content-center"><img src="{{item.captured_image}}" alt="User's captured face" style="width:160px;height:120px;"></td>
-                                        </tr>
+                                        {% for item in data %}
+                                            <tr>
+                                                <td>{{item.id}}</td>
+                                                <td>{{item.name}}</td>
+                                                <td>{{item.floor}}</td>
+                                                <td>{{item.status}}</td>
+                                                <td>{{item.timestamp}}</td>
+                                                <td class="d-flex align-items-center justify-content-center"><img src="{{item.captured_image}}" alt="User's captured face" style="width:160px;height:120px;"></td>
+                                            </tr>
+                                        {% endfor %}
                                     </tbody>
-                                    {% endfor %}
                                 </table>
                             </div>
                         </div>

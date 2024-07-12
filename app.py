@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, redirect, url_for, make_response, session
+from flask import Flask, flash, render_template, request, redirect, url_for, make_response, session
 from flask_jwt_extended import JWTManager, set_access_cookies, jwt_required, unset_jwt_cookies
 from datetime import datetime
 from zoneinfo import ZoneInfo
@@ -22,8 +22,8 @@ app.config['JWT_COOKIE_CSRF_PROTECT'] = False
 jwt = JWTManager(app)
 
 # set base url API
+BASE_URL = "http://127.0.0.1:8000"
 # BASE_URL = "https://eyecatching-image-ghhipha43a-uc.a.run.app"
-BASE_URL = "https://eyecatching-image-ghhipha43a-uc.a.run.app"
 
 def get_employees():
     # ambil jwt token dari session
@@ -33,6 +33,9 @@ def get_employees():
     data = requests.get(f"{BASE_URL}/api/users", headers={"Authorization": jwtToken})
     data = data.json()
 
+    if data["message"] != 'OK':
+        return False
+
     userData = []
 
     # iterasi melalui setiap entitas user di dalam data
@@ -40,11 +43,13 @@ def get_employees():
         userId = userInfo.get('user_id', '')
         name = userInfo.get('name', '')
         floor = userInfo.get('floor', '')
+        email = userInfo.get('email', '')
+
 
         if name == "admin":
             continue
         # nambahin data user ke dalam list user_data
-        userData.append({'id': userId, 'name': name, 'floor': floor})
+        userData.append({'id': userId, 'name': name, 'floor': floor, 'email': email})
     
     return userData
 
@@ -122,8 +127,15 @@ def dashboard():
     
     data = requests.get(f"{BASE_URL}/api/users/attendance-logs", headers={"Authorization": jwtToken})
     data = data.json()
-    
+
+    employeesData = get_employees()
+
     attendanceData = []
+
+    if data["message"] != 'OK':
+        attendanceData = []
+        return render_template("index.html", attendanceData=attendanceData, employeesData=employeesData)
+    
 
     # iterasi melalui setiap entitas user di dalam data
     for nodeId, timestampInfo in data['data'].items():
@@ -144,8 +156,9 @@ def dashboard():
                     'timestamp': timestamp, 
                     })
     
-    employeesData = get_employees()
-    
+    if employeesData is False:
+        employeesData = {}
+        return render_template("index.html", attendanceData=attendanceData, employeesData=employeesData)
     
     return render_template("index.html", attendanceData=attendanceData, employeesData=employeesData)
 
@@ -181,8 +194,6 @@ def register():
         password = request.form.get("password")
         profile_picture = request.files.get("profilePicture")
 
-        print(nip, name, floor, email, password)
-
         # cek lagi kalo email udah diisi
         if nip and name and floor and email and password:
 
@@ -204,10 +215,77 @@ def register():
             response = response.json()
 
             # tambahin validasi jika request post berhasil, maka ada pesannya
-
+            if response["operation_status"] != 1:
+                flash(response["message"], 'error')
+            
+            flash(response["message"], "success")
             return redirect(url_for("employees"))
+        
+        flash("Please fill all the forms!", 'error')
 
     return redirect(url_for("employees"))
+
+@app.route('/update-user/<int:user_id>', methods=["POST"])
+# method untuk ngasih tau flask bahwa endpoint ini butuh jwt token kalo mau ngakses
+@jwt_required()
+def update_user(user_id):
+    # ambil jwt token dari session
+    jwtToken = f"Bearer {session['jwt_token']}"
+
+    # cek method http request yang masuk ke endpoint
+    if request.method == "POST":
+        name = request.form.get("name")
+        floor = request.form.get("floor")
+        email = request.form.get("email")
+        profile_picture = request.files.get("profilePicture")
+
+        # set data login
+        userData = {
+            "name": name,
+            "floor": floor,
+            "email": email,
+        }
+
+        files = {
+            'image_file': (profile_picture.filename, profile_picture.stream, profile_picture.mimetype)
+        }
+
+        # kirim post request ke API untuk login
+        response = requests.put(f"{BASE_URL}/api/users/{user_id}", files=files, data=userData, headers={"Authorization": jwtToken})
+        response = response.json()
+
+        # tambahin validasi jika request post berhasil, maka ada pesannya
+        if 'message' not in response:
+            flash(response['detail'][0]['msg'], 'error')
+            return redirect(url_for("employees"))
+
+        if response["operation_status"] != 1:
+            flash(response["message"], 'error')
+        
+        flash(response["message"], "success")
+        return redirect(url_for("employees"))
+    
+    return redirect(url_for("employees"))
+
+@app.route('/delete-user/<int:user_id>', methods=["POST"])
+# method untuk ngasih tau flask bahwa endpoint ini butuh jwt token kalo mau ngakses
+@jwt_required()
+def delete_user(user_id):
+    jwtToken = f"Bearer {session['jwt_token']}"
+
+    if request.method == "POST":
+        if request.form.get('_method') == 'DELETE':
+            data = requests.delete(f"{BASE_URL}/api/users/{user_id}", headers={"Authorization": jwtToken})
+            
+            if not data:
+                flash("Failed to delete user data", "error")
+
+            data = data.json()
+            flash(data["message"], "succcess")
+            return redirect(url_for("employees"))
+    
+    return redirect(url_for("employees"))
+
 
 @app.route('/attendances-log', methods=["GET"])
 # method untuk ngasih tau flask bahwa endpoint ini butuh jwt token kalo mau ngakses
@@ -219,6 +297,9 @@ def attendances_log():
     data = requests.get(f"{BASE_URL}/api/users/attendance-logs", headers={"Authorization": jwtToken})
     data = data.json()
     
+    if data["message"] != 'OK':
+        return render_template("attendance.html")
+        
     userData = []
 
     # iterasi melalui setiap entitas user di dalam data
