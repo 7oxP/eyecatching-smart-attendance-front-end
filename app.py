@@ -25,19 +25,24 @@ app.config['JWT_COOKIE_CSRF_PROTECT'] = False
 jwt = JWTManager(app)
 
 # set base url API
-BASE_URL = "https://eyecatching-image-ghhipha43a-uc.a.run.app"
+BASE_URL = "http://127.0.0.1:8000"
 
 def get_employees():
+    if not 'jwt_token' in session:
+        return "no session found"
+    
     # ambil jwt token dari session
     jwtToken = f"Bearer {session['jwt_token']}"
 
     # kirim get request ke API untuk dapetin data user (di bagian header authorization diisi jwt token)
     data = requests.get(f"{BASE_URL}/api/users", headers={"Authorization": jwtToken})
     data = data.json()
-    print(data)
+    
+    if data["operation_status"] == -15:
+        return "token expired"
 
     if data["message"] != 'OK':
-        return False
+        return "no data"
 
     userData = []
 
@@ -126,10 +131,18 @@ def logout():
 @jwt_required()
 def dashboard():
      # ambil jwt token dari session
+    if not 'jwt_token' in session:
+        flash("No session found, please login again", "error")
+        return render_template("auth/login.html")
+    
     jwtToken = f"Bearer {session['jwt_token']}"
     
     data = requests.get(f"{BASE_URL}/api/users/attendance-logs", headers={"Authorization": jwtToken})
     data = data.json()
+
+    if data['operation_status'] == -15:
+        flash("Your session has expired, please login again", "error")
+        return render_template("auth/login.html")
 
     employeesData = get_employees()
 
@@ -159,7 +172,7 @@ def dashboard():
                     'timestamp': timestamp, 
                     })
     
-    if employeesData is False:
+    if employeesData == 'no data':
         employeesData = {}
         return render_template("index.html", attendanceData=attendanceData, employeesData=employeesData)
     
@@ -171,7 +184,16 @@ def dashboard():
 def employees():
 
     userData = get_employees()
-    if userData is False:
+
+    if userData == 'no session found':
+        flash("No session found, please login again", "error")
+        return render_template("auth/login.html")
+    
+    elif userData == 'token expired':
+        flash("Your session has expired, please login again", "error")
+        return render_template("auth/login.html")
+    
+    elif userData == 'no data':
         userData = {}
         return render_template("employees.html", data=userData)
     
@@ -187,6 +209,10 @@ def gallery():
 # method untuk ngasih tau flask bahwa endpoint ini butuh jwt token kalo mau ngakses
 @jwt_required()
 def register():
+
+    if not 'jwt_token' in session:
+        flash("No session found, please login again", "error")
+        return render_template("auth/login.html")
 
     # ambil jwt token dari session
     jwtToken = f"Bearer {session['jwt_token']}"
@@ -219,11 +245,17 @@ def register():
             # kirim post request ke API untuk login
             response = requests.post(f"{BASE_URL}/api/users", files=files, data=userData, headers={"Authorization": jwtToken})
             response = response.json()
+            print(response)
+
+            if response['operation_status'] == -15:
+                flash("Your session has expired, please login again", "error")
+                return render_template("auth/login.html")
 
             # tambahin validasi jika request post berhasil, maka ada pesannya
             if response["operation_status"] != 1:
                 flash(response["message"], 'error')
-            
+                return redirect(url_for("employees"))
+
             flash(response["message"], "success")
             return redirect(url_for("employees"))
         
@@ -235,6 +267,11 @@ def register():
 # method untuk ngasih tau flask bahwa endpoint ini butuh jwt token kalo mau ngakses
 @jwt_required()
 def update_user(user_id):
+
+    if not 'jwt_token' in session:
+        flash("No session found, please login again", "error")
+        return render_template("auth/login.html")
+    
     # ambil jwt token dari session
     jwtToken = f"Bearer {session['jwt_token']}"
 
@@ -265,6 +302,10 @@ def update_user(user_id):
             flash(response['detail'][0]['msg'], 'error')
             return redirect(url_for("employees"))
 
+        if response['operation_status'] == -15:
+                flash("Your session has expired, please login again", "error")
+                return render_template("auth/login.html")
+
         if response["operation_status"] != 1:
             flash(response["message"], 'error')
         
@@ -277,6 +318,11 @@ def update_user(user_id):
 # method untuk ngasih tau flask bahwa endpoint ini butuh jwt token kalo mau ngakses
 @jwt_required()
 def delete_user(user_id):
+
+    if not 'jwt_token' in session:
+        flash("No session found, please login again", "error")
+        return render_template("auth/login.html")
+    
     jwtToken = f"Bearer {session['jwt_token']}"
 
     if request.method == "POST":
@@ -287,6 +333,11 @@ def delete_user(user_id):
                 flash("Failed to delete user data", "error")
 
             data = data.json()
+
+            if data['operation_status'] == -15:
+                flash("Your session has expired, please login again", "error")
+                return render_template("auth/login.html")
+            
             flash(data["message"], "succcess")
             return redirect(url_for("employees"))
     
@@ -297,11 +348,20 @@ def delete_user(user_id):
 # method untuk ngasih tau flask bahwa endpoint ini butuh jwt token kalo mau ngakses
 @jwt_required()
 def attendances_log():
+
+    if not 'jwt_token' in session:
+        flash("No session found, please login again", "error")
+        return render_template("auth/login.html")
+    
     # ambil jwt token dari session
     jwtToken = f"Bearer {session['jwt_token']}"
     
     data = requests.get(f"{BASE_URL}/api/users/attendance-logs", headers={"Authorization": jwtToken})
     data = data.json()
+
+    if data['operation_status'] == -15:
+        flash("Your session has expired, please login again", "error")
+        return render_template("auth/login.html")
     
     if data["message"] != 'OK':
         return render_template("attendance.html")
