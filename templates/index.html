@@ -201,40 +201,46 @@
                     </div>
                  <!-- end Page Content -->
 
-            <!-- Begin Tables -->
-            <div class="container-fluid">
-                <!-- DataTales Example -->
-                 
-                <div class="card shadow mb-4">
-                    <div class="card-header py-3 d-flex justify-content-between align-items-center">
-                        <h6 class="m-0 font-weight-bold text-primary">Daftar Karyawan yang Sudah Hadir</h6>
-                        <a class="btn btn-outline-info btn-sm" href="{{url_for('attendances_log')}}" role="button">View More <i class="fas fa-arrow-right ml-1"></i></a>
-                    </div>
-                    <div class="card-body">
-                        <div class="table-responsive">
-                            <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
-                                <thead>
-                                    <tr>
-                                        <th>Lantai</th>
-                                        <th>Waktu</th>
-                                        <th>Status</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    {% for item in attendanceData %}
+            {% if not attendanceData %}
+                <div class="container-fluid">
+                    <p><i><strong>Belum ada karyawan yang hadir</strong></i></p>
+                </div>
+            {% else %}
+                <!-- Begin Tables -->
+                <div class="container-fluid">
+                    <!-- DataTales Example -->
+                    
+                    <div class="card shadow mb-4">
+                        <div class="card-header py-3 d-flex justify-content-between align-items-center">
+                            <h6 class="m-0 font-weight-bold text-primary">Daftar Karyawan yang Sudah Hadir</h6>
+                            <a class="btn btn-outline-info btn-sm" href="{{url_for('attendances_log')}}" role="button">View More <i class="fas fa-arrow-right ml-1"></i></a>
+                        </div>
+                        <div class="card-body">
+                            <div class="table-responsive">
+                                <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
+                                    <thead>
                                         <tr>
-                                            <td>{{item.floor}}</td>
-                                            <td>{{item.status}}</td>
-                                            <td>{{item.timestamp}}</td>
+                                            <th>Lantai</th>
+                                            <th>Waktu</th>
+                                            <th>Status</th>
                                         </tr>
-                                    {% endfor %}
-                                </tbody>
-                            </table>
+                                    </thead>
+                                    <tbody>
+                                        {% for item in attendanceData %}
+                                            <tr>
+                                                <td>{{item.floor}}</td>
+                                                <td>{{item.status}}</td>
+                                                <td>{{item.timestamp}}</td>
+                                            </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
                         </div>
                     </div>
                 </div>
-            </div>
-            <!-- End Tables -->
+                <!-- End Tables -->
+            {% endif %}
 
             <!-- Footer -->
             <footer class="sticky-footer bg-white">

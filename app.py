@@ -3,14 +3,17 @@ from flask_jwt_extended import JWTManager, set_access_cookies, jwt_required, uns
 from datetime import datetime
 from zoneinfo import ZoneInfo
 import requests
+import os
+from dotenv import load_dotenv
 
 app = Flask(__name__)
+secretKey = os.getenv("SECRET_KEY")
 
 # set app secret key
-app.secret_key = "ini_secret"
+app.secret_key = secretKey
 
 # set jwt secret key
-app.config['JWT_SECRET_KEY'] = '3f2d7dd6853766b9a065bde16186be1a943fd2159594037522c62109e6868f3b'
+app.config['JWT_SECRET_KEY'] = secretKey
 
 # set lokasi penyimpanan jwt yang diget pas login
 app.config['JWT_TOKEN_LOCATION'] = ['cookies']
@@ -22,8 +25,7 @@ app.config['JWT_COOKIE_CSRF_PROTECT'] = False
 jwt = JWTManager(app)
 
 # set base url API
-BASE_URL = "http://127.0.0.1:8000"
-# BASE_URL = "https://eyecatching-image-ghhipha43a-uc.a.run.app"
+BASE_URL = "https://eyecatching-image-ghhipha43a-uc.a.run.app"
 
 def get_employees():
     # ambil jwt token dari session
@@ -32,6 +34,7 @@ def get_employees():
     # kirim get request ke API untuk dapetin data user (di bagian header authorization diisi jwt token)
     data = requests.get(f"{BASE_URL}/api/users", headers={"Authorization": jwtToken})
     data = data.json()
+    print(data)
 
     if data["message"] != 'OK':
         return False
@@ -168,6 +171,9 @@ def dashboard():
 def employees():
 
     userData = get_employees()
+    if userData is False:
+        userData = {}
+        return render_template("employees.html", data=userData)
     
     return render_template("employees.html", data=userData)
 
