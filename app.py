@@ -25,7 +25,7 @@ app.config['JWT_COOKIE_CSRF_PROTECT'] = False
 jwt = JWTManager(app)
 
 # set base url API
-BASE_URL = "http://127.0.0.1:8000"
+BASE_URL = "https://eyecatching-image-ghhipha43a-uc.a.run.app"
 
 def get_employees():
     if not 'jwt_token' in session:
@@ -95,6 +95,7 @@ def login():
 
             # cek kalo email or password salah
             if userLoginData['operation_status'] == -8:
+                flash("Email or password is incorrect!", "error")
                 return render_template("auth/login.html",)
 
             # dapetin role user
