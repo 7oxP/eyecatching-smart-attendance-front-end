@@ -6,6 +6,8 @@ import requests
 import os
 from dotenv import load_dotenv
 
+load_dotenv()
+
 app = Flask(__name__)
 secretKey = os.getenv("SECRET_KEY")
 
@@ -25,7 +27,7 @@ app.config['JWT_COOKIE_CSRF_PROTECT'] = False
 jwt = JWTManager(app)
 
 # set base url API
-BASE_URL = "https://eyecatching-image-ghhipha43a-uc.a.run.app"
+BASE_URL = os.getenv("BASE_URL")
 
 def get_employees():
     if not 'jwt_token' in session:
