@@ -25,6 +25,22 @@
 
 </head>
 
+<style>
+    @font-face {
+        font-family: 'XLFont';
+        src: url('../static/fonts/AxiataBold.otf') format('embedded-opentype'), /* Internet Explorer */
+             url('../static/fonts/AxiataBold.otf') format('woff2'),             /* Super Modern Browsers */
+             url('../static/fonts/AxiataBold.otf') format('woff'),              /* Pretty Modern Browsers */
+             url('../static/fonts/AxiataBold.otf') format('truetype'),          /* Safari, Android, iOS */
+             url('../static/fonts/AxiataBold.otf') format('svg');               /* Legacy iOS */
+    }
+
+    .brandFont{
+        font-family: "XLFont";
+        text-transform: capitalize;
+    }
+</style>
+
 <body id="page-top">
 
     <!-- Page Wrapper -->
@@ -33,10 +49,12 @@
         <!-- Sidebar -->
         <ul class="navbar-nav bg-gradient-primary sidebar sidebar-dark accordion" id="accordionSidebar">
 
-            <!-- Sidebar - Brand -->
-            <a class="sidebar-brand d-flex align-items-center justify-content-center" href="{{url_for('dashboard')}}">
-                <img src="../static/img/image_54.png" alt="logo XL">
-                <div class="sidebar-brand-text mx-3"> <sup></sup></div>
+           <!-- Sidebar - Brand -->
+            <a class="sidebar-brand d-flex align-items-center justify-content-center my-3" href="{{url_for('dashboard')}}">
+            <div class="sidebar-brand-icon">
+                <img src="../static/img/eyecatching-logo.png" width="35px" alt="eyecatching logo">
+            </div>
+            <div class="sidebar-brand-text mx-3 brandFont">Eyecatching Smart Attendance</div>
             </a>
 
             <!-- Divider -->
@@ -51,11 +69,6 @@
 
             <!-- Divider -->
             <hr class="sidebar-divider">
-
-            <!-- Heading -->
-            <div class="sidebar-heading">
-                Addons
-            </div>
 
             <!-- Nav Item - Pages Collapse Menu -->
             <li class="nav-item">
